@@ -13,7 +13,6 @@
       --muted: #94a3b8;
       --accent: #3b82f6;
       --accent-hover: #2563eb;
-      --green: #10b981;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body {
@@ -22,41 +21,26 @@
       min-height: 100vh; padding: 20px;
     }
     .container {
-      width: 100%; max-width: 640px; background: var(--card);
+      width: 100%; max-width: 600px; background: var(--card);
       border: 1px solid var(--border); border-radius: 16px;
       padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
-    h1 { margin: 0 0 8px; font-size: 1.5rem; }
-    p.sub { margin: 0 0 24px; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
-    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-    @media (max-width: 520px) { .choice-grid { grid-template-columns: 1fr; } }
-    .choice-btn {
-      display: flex; flex-direction: column; align-items: flex-start;
-      padding: 18px; border-radius: 12px; border: 1px solid var(--border);
-      background: #0f172a; color: var(--text); text-decoration: none;
-      cursor: pointer; transition: 0.2s; text-align: left;
+    h1 { margin: 0 0 6px; font-size: 1.5rem; }
+    p.sub { margin: 0 0 18px; color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
+    .voice-toggle {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 0.84rem;
+      color: var(--muted); margin-bottom: 14px; cursor: pointer;
     }
-    .choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .choice-btn strong { font-size: 1.05rem; margin-bottom: 6px; display: block; }
-    .choice-btn span { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
-    .badge {
-      display: inline-block; font-size: 0.72rem; font-weight: 600;
-      padding: 3px 8px; border-radius: 99px; margin-bottom: 10px;
-      background: rgba(59,130,246,0.15); color: #60a5fa;
-    }
-    .badge.phone { background: rgba(16,185,129,0.15); color: #34d399; }
-
-    /* Chat Interface */
-    #chat-box { display: none; border-top: 1px solid var(--border); padding-top: 20px; }
     .messages {
-      height: 300px; overflow-y: auto; display: flex; flex-direction: column;
-      gap: 12px; padding-right: 6px; margin-bottom: 14px;
+      height: 330px; overflow-y: auto; display: flex; flex-direction: column;
+      gap: 12px; padding: 12px; background: #0f172a;
+      border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px;
     }
     .msg {
       max-width: 85%; padding: 12px 15px; border-radius: 12px;
       font-size: 0.94rem; line-height: 1.45;
     }
-    .msg.ai { background: #0f172a; border: 1px solid var(--border); align-self: flex-start; }
+    .msg.ai { background: #1e293b; border: 1px solid var(--border); align-self: flex-start; }
     .msg.user { background: var(--accent); color: white; align-self: flex-end; }
     .input-row { display: flex; gap: 8px; }
     input[type="text"] {
@@ -72,58 +56,29 @@
     button.mic { background: #334155; font-size: 1.1rem; }
     button.mic.listening { background: #ef4444; animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: 0.6; } }
-    .voice-toggle {
-      display: flex; align-items: center; gap: 6px; font-size: 0.82rem;
-      color: var(--muted); margin-bottom: 10px; cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <h1>Tell Us About Your Project</h1>
-  <p class="sub">Choose how you prefer to share what you need built. Both options take about 2 minutes and send your project brief straight to our developer.</p>
+  <p class="sub">Answer 5 quick questions by typing or using your microphone—your project brief goes straight to our developer.</p>
 
-  <!-- Dual Choice Cards -->
-  <div class="choice-grid">
-    <button class="choice-btn" onclick="startOnline()">
-      <span class="badge">Chat or Browser Mic</span>
-      <strong>Interact Online</strong>
-      <span>Type or speak directly on this page with our guided AI intake assistant.</span>
-    </button>
+  <label class="voice-toggle">
+    <input type="checkbox" id="tts-toggle" /> Read AI questions aloud
+  </label>
 
-    <a id="phone-link" class="choice-btn" href="tel:+10000000000">
-      <span class="badge phone">24/7 Voice Line</span>
-      <strong>Call by Phone</strong>
-      <span id="phone-display">Tap to call our AI phone assistant and describe your project aloud.</span>
-    </a>
-  </div>
+  <div class="messages" id="messages"></div>
 
-  <!-- Online Guided Intake -->
-  <div id="chat-box">
-    <label class="voice-toggle">
-      <input type="checkbox" id="tts-toggle" /> Read AI questions aloud
-    </label>
-    <div class="messages" id="messages"></div>
-    <div class="input-row" id="input-controls">
-      <button class="action mic" id="mic-btn" title="Speak answer" onclick="toggleMic()">🎤</button>
-      <input type="text" id="user-input" placeholder="Type or click mic to speak..." onkeydown="if(event.key==='Enter') sendAnswer()" />
-      <button class="action" onclick="sendAnswer()">Send</button>
-    </div>
+  <div class="input-row" id="input-controls">
+    <button class="action mic" id="mic-btn" title="Speak answer" onclick="toggleMic()">🎤</button>
+    <input type="text" id="user-input" placeholder="Type or tap mic to speak..." onkeydown="if(event.key==='Enter') sendAnswer()" />
+    <button class="action" onclick="sendAnswer()">Send</button>
   </div>
 </div>
 
 <script>
-  // ================= CONFIGURATION =================
-  const CONFIG = {
-    WEB3FORMS_KEY: "7393fec3-3022-4eea-bdef-224842265d47",
-    PHONE_NUMBER: "+15551234567",          // Replace with your Vapi number in Step 3
-    PHONE_LABEL: "Call (555) 123-4567 — Speak directly with our AI assistant."
-  };
-  // =================================================
-
-  document.getElementById("phone-link").href = `tel:${CONFIG.PHONE_NUMBER}`;
-  document.getElementById("phone-display").textContent = CONFIG.PHONE_LABEL;
+  const WEB3FORMS_KEY = "7393fec3-3022-4eea-bdef-224842265d47";
 
   const STEPS = [
     {
@@ -132,7 +87,7 @@
     },
     {
       key: "context",
-      question: "Got it. Who is this website or app for, and what is the main goal you want visitors to take?"
+      question: "Got it. Who is this website or app for, and what is the main action you want visitors to take?"
     },
     {
       key: "constraints",
@@ -144,13 +99,12 @@
     },
     {
       key: "contact",
-      question: "Last step—what is your name and best email (or phone number) so our developer can follow up with you?"
+      question: "Last step—what is your name and best email address so our developer can follow up with you?"
     }
   ];
 
   let currentStep = 0;
   let answers = {};
-  let started = false;
 
   function addMessage(text, sender) {
     const box = document.getElementById("messages");
@@ -164,15 +118,6 @@
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
     }
-  }
-
-  function startOnline() {
-    document.getElementById("chat-box").style.display = "block";
-    if (!started) {
-      started = true;
-      addMessage(STEPS[0].question, "ai");
-    }
-    document.getElementById("user-input").focus();
   }
 
   async function sendAnswer() {
@@ -196,10 +141,9 @@
 
   async function submitToEmail() {
     const payload = {
-      access_key: CONFIG.WEB3FORMS_KEY,
-      subject: `New Web Dev Inquiry (Online) — ${answers.contact || "New Lead"}`,
-      from_name: "AI Project Intake Portal",
-      Channel: "Online Web Portal",
+      access_key: WEB3FORMS_KEY,
+      subject: `New Web Dev Inquiry — ${answers.contact || "New Lead"}`,
+      from_name: "AI Project Intake",
       "1_Core_Objective": answers.objective,
       "2_Audience_and_Goal": answers.context,
       "3_Timeline_and_Budget": answers.constraints,
@@ -217,14 +161,14 @@
       if (data.success) {
         addMessage("✅ All sent! Your project details are in our developer's inbox. Expect a reply soon.", "ai");
       } else {
-        addMessage("⚠️ Something went wrong sending the form. Please check your Web3Forms key or call our phone line above.", "ai");
+        addMessage("⚠️ Something went wrong sending the form. Please verify your Web3Forms key.", "ai");
       }
     } catch (err) {
-      addMessage("⚠️ Network error while sending. Please try calling our phone line above.", "ai");
+      addMessage("⚠️ Network error while sending. Please refresh and try again.", "ai");
     }
   }
 
-  // Browser Speech-to-Text (Web Speech API)
+  // Browser Speech-to-Text
   let recognition = null;
   let isListening = false;
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -235,8 +179,7 @@
     recognition.interimResults = false;
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      document.getElementById("user-input").value = transcript;
+      document.getElementById("user-input").value = event.results[0][0].transcript;
       sendAnswer();
     };
     recognition.onend = () => {
@@ -258,6 +201,12 @@
       recognition.start();
     }
   }
+
+  // Start immediately on page load
+  window.addEventListener("DOMContentLoaded", () => {
+    addMessage(STEPS[0].question, "ai");
+    document.getElementById("user-input").focus();
+  });
 </script>
 </body>
 </html>
