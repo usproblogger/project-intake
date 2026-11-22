@@ -95,13 +95,13 @@
 
   const STEPS = [
     {
-      key: "objective",
-      question: "Hi there! In your own words, what are you hoping to build or get done on the web?"
+      key: "project_type",
+      question: "Hi there! Is this a new project, an existing project, or something you need to troubleshoot?",
+      options: ["New Project", "Existing Project", "Troubleshoot"]
     },
     {
-      key: "project_type",
-      question: "Got it. Is this a new project, an existing project, or something you need to troubleshoot?",
-      options: ["New Project", "Existing Project", "Troubleshoot"]
+      key: "objective",
+      question: "Got it. In your own words, what are you hoping to build, update, or fix on the web?"
     },
     {
       key: "constraints",
@@ -183,8 +183,8 @@
       access_key: WEB3FORMS_KEY,
       subject: `New Web Dev Inquiry [${answers.project_type || "Project"}] — ${answers.contact || "New Lead"}`,
       from_name: "AI Project Intake",
-      "1_Core_Objective": answers.objective,
-      "2_Project_Type": answers.project_type,
+      "1_Project_Type": answers.project_type,
+      "2_Core_Objective": answers.objective,
       "3_Timeline_and_Budget": answers.constraints,
       "4_Existing_Materials": answers.materials,
       "5_Client_Contact": answers.contact
