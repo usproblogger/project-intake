@@ -3,244 +3,392 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Start Your Project — AI Intake Assistant</title>
+  <title>Start Your Project — Client Intake</title>
   <style>
-    :root {
-   nknkn
-      --accent-hover: #2563eb;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+
     body {
-      margin: 0; background: var(--bg); color: var(--text);
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; padding: 20px;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
-    .container {
-      width: 100%; max-width: 600px; background: var(--card);
-      border: 1px solid var(--border); border-radius: 16px;
-      padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 680px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      padding: 28px;
     }
-    h1 { margin: 0 0 6px; font-size: 1.5rem; }
-    p.sub { margin: 0 0 18px; color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
-    .voice-toggle {
-      display: inline-flex; align-items: center; gap: 6px; font-size: 0.84rem;
-      color: var(--muted); margin-bottom: 14px; cursor: pointer;
+
+    h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
     }
-    .messages {
-      height: 330px; overflow-y: auto; display: flex; flex-direction: column;
-      gap: 12px; padding: 12px; background: #0f172a;
-      border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px;
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.45;
+      margin-bottom: 16px;
     }
+
+    .tts-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #334155;
+      cursor: pointer;
+      margin-bottom: 14px;
+      user-select: none;
+    }
+
+    .chat-box {
+      background-color: #0b1324;
+      border-radius: 12px;
+      padding: 18px;
+      height: 330px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
     .msg {
-      max-width: 85%; padding: 12px 15px; border-radius: 12px;
-      font-size: 0.94rem; line-height: 1.45;
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      word-wrap: break-word;
     }
-    .msg.ai { background: #1e293b; border: 1px solid var(--border); align-self: flex-start; }
-    .msg.user { background: var(--accent); color: white; align-self: flex-end; }
-    .quick-options {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+
+    /* High-contrast AI bubble */
+    .bot-msg {
+      background-color: #1e293b;
+      color: #f8fafc;
+      align-self: flex-start;
+      border: 1px solid #334155;
     }
-    .option-btn {
-      padding: 9px 14px; border-radius: 999px; border: 1px solid var(--accent);
-      background: rgba(59, 130, 246, 0.14); color: #93c5fd;
-      font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: 0.15s;
+
+    /* User reply bubble */
+    .user-msg {
+      background-color: #2563eb;
+      color: #ffffff;
+      align-self: flex-end;
     }
-    .option-btn:hover {
-      background: var(--accent); color: white;
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      min-height: 38px;
     }
-    .input-row { display: flex; gap: 8px; }
-    input[type="text"] {
-      flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
-      background: #0f172a; color: var(--text); font-size: 0.95rem; outline: none;
+
+    /* High-contrast quick-reply pills */
+    .quick-btn {
+      background-color: #e2e8f0;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
     }
-    input[type="text"]:focus { border-color: var(--accent); }
-    button.action {
-      padding: 0 16px; border-radius: 10px; border: none; font-weight: 600;
-      cursor: pointer; background: var(--accent); color: white; transition: 0.15s;
+
+    .quick-btn:hover {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
     }
-    button.action:hover { background: var(--accent-hover); }
-    button.mic { background: #334155; font-size: 1.1rem; }
-    button.mic.listening { background: #ef4444; animation: pulse 1.2s infinite; }
-    @keyframes pulse { 50% { opacity: 0.6; } }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mic-btn {
+      background-color: #334155;
+      color: #f8fafc;
+      border: none;
+      border-radius: 10px;
+      width: 46px;
+      height: 46px;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease;
+    }
+
+    .mic-btn.listening {
+      background-color: #dc2626;
+    }
+
+    .text-input {
+      flex: 1;
+      background-color: #0b1324;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      height: 46px;
+      padding: 0 14px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .text-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .text-input:focus {
+      border-color: #3b82f6;
+    }
+
+    .send-btn {
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      height: 46px;
+      padding: 0 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .send-btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    .send-btn:disabled,
+    .text-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
+  <div class="card">
+    <h1>Tell Us About Your Project</h1>
+    <p class="subtitle">
+      Answer 5 quick questions by tapping, typing, or using your microphone—your project brief goes straight to our developer.
+    </p>
 
-<div class="container">
-  <h1>Tell Us About Your Project</h1>
-  <p class="sub">Answer 5 quick questions by tapping, typing, or using your microphone—your project brief goes straight to our developer.</p>
+    <label class="tts-toggle">
+      <input type="checkbox" id="ttsCheckbox" />
+      Read AI questions aloud
+    </label>
 
-  <label class="voice-toggle">
-    <input type="checkbox" id="tts-toggle" /> Read AI questions aloud
-  </label>
+    <div class="chat-box" id="chatBox"></div>
 
-  <div class="messages" id="messages"></div>
+    <div class="quick-replies" id="quickReplies"></div>
 
-  <div class="quick-options" id="quick-options" style="display: none;"></div>
-
-  <div class="input-row" id="input-controls">
-    <button class="action mic" id="mic-btn" title="Speak answer" onclick="toggleMic()">🎤</button>
-    <input type="text" id="user-input" placeholder="Type or tap mic to speak..." onkeydown="if(event.key==='Enter') sendAnswer()" />
-    <button class="action" onclick="sendAnswer()">Send</button>
+    <div class="input-row">
+      <button type="button" class="mic-btn" id="micBtn" title="Tap to speak">🎤</button>
+      <input
+        type="text"
+        class="text-input"
+        id="userInput"
+        placeholder="Type or tap mic to speak..."
+        autocomplete="off"
+      />
+      <button type="button" class="send-btn" id="sendBtn">Send</button>
+    </div>
   </div>
-</div>
 
-<script>
-  const WEB3FORMS_KEY = "7393fec3-3022-4eea-bdef-224842265d47";
+  <script>
+    const WEB3FORMS_ACCESS_KEY = "7393fec3-3022-4eea-bdef-224842265d47";
 
-  const STEPS = [
-    {
-      key: "project_type",
-      question: "Hi there! Is this a new project, an existing project, or something you need to troubleshoot?",
-      options: ["New Project", "Existing Project", "Troubleshoot"]
-    },
-    {
-      key: "objective",
-      question: "Got it. In your own words, what are you hoping to build, update, or fix on the web?"
-    },
-    {
-      key: "constraints",
-      question: "Do you have a target launch timeline or rough budget range in mind?"
-    },
-    {
-      key: "materials",
-      question: "Do you already have a domain, branding, or example sites you like, or are we starting from scratch?"
-    },
-    {
-      key: "contact",
-      question: "Last step—what is your name and best email address so our developer can follow up with you?"
+    const questions = [
+      {
+        key: "project_type",
+        text: "Hi there! Is this a new project, an existing project, or something you need to troubleshoot?",
+        options: ["New Project", "Existing Project", "Troubleshoot"]
+      },
+      {
+        key: "platform_or_stack",
+        text: "Got it. What type of site, app, or platform is this for (e.g., landing page, web app, Shopify, WordPress, custom script)?",
+        options: ["Landing Page", "Web App", "WordPress / Shopify", "Other / Not Sure"]
+      },
+      {
+        key: "project_details",
+        text: "Briefly describe what you want built, updated, or fixed.",
+        options: []
+      },
+      {
+        key: "timeline_budget",
+        text: "What is your ideal timeline or target launch window?",
+        options: ["ASAP / This Week", "2–4 Weeks", "Flexible / Just Exploring"]
+      },
+      {
+        key: "client_contact",
+        text: "Last step—what is your name and best email address so our developer can send your project brief and follow up?",
+        options: []
+      }
+    ];
+
+    let step = 0;
+    const answers = {};
+
+    const chatBox = document.getElementById("chatBox");
+    const quickReplies = document.getElementById("quickReplies");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const micBtn = document.getElementById("micBtn");
+    const ttsCheckbox = document.getElementById("ttsCheckbox");
+
+    function speak(text) {
+      if (!ttsCheckbox.checked || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
     }
-  ];
 
-  let currentStep = 0;
-  let answers = {};
+    function addMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `msg ${sender === "bot" ? "bot-msg" : "user-msg"}`;
+      div.textContent = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      if (sender === "bot") speak(text);
+    }
 
-  function renderOptions(step) {
-    const optContainer = document.getElementById("quick-options");
-    optContainer.innerHTML = "";
-    if (step && step.options && step.options.length > 0) {
-      step.options.forEach(label => {
+    function renderQuickReplies(options) {
+      quickReplies.innerHTML = "";
+      options.forEach((opt) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "option-btn";
-        btn.textContent = label;
-        btn.onclick = () => submitValue(label);
-        optContainer.appendChild(btn);
+        btn.className = "quick-btn";
+        btn.textContent = opt;
+        btn.onclick = () => handleUserAnswer(opt);
+        quickReplies.appendChild(btn);
       });
-      optContainer.style.display = "flex";
-    } else {
-      optContainer.style.display = "none";
     }
-  }
 
-  function addMessage(text, sender) {
-    const box = document.getElementById("messages");
-    const div = document.createElement("div");
-    div.className = `msg ${sender}`;
-    div.textContent = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-
-    if (sender === "ai" && document.getElementById("tts-toggle").checked && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    function askCurrentQuestion() {
+      const q = questions[step];
+      addMessage(q.text, "bot");
+      renderQuickReplies(q.options);
     }
-  }
 
-  async function submitValue(val) {
-    if (!val) return;
-    document.getElementById("quick-options").style.display = "none";
+    async function submitToWeb3Forms() {
+      userInput.disabled = true;
+      sendBtn.disabled = true;
+      quickReplies.innerHTML = "";
+      addMessage("Sending your project brief to our developer...", "bot");
 
-    addMessage(val, "user");
-    answers[STEPS[currentStep].key] = val;
-    document.getElementById("user-input").value = "";
-    currentStep++;
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `New Client Intake: ${answers.project_type || "Project Inquiry"}`,
+        from_name: "Project Intake Assistant",
+        project_type: answers.project_type || "",
+        platform_or_stack: answers.platform_or_stack || "",
+        project_details: answers.project_details || "",
+        timeline_budget: answers.timeline_budget || "",
+        client_contact: answers.client_contact || ""
+      };
 
-    if (currentStep < STEPS.length) {
-      setTimeout(() => {
-        addMessage(STEPS[currentStep].question, "ai");
-        renderOptions(STEPS[currentStep]);
-      }, 350);
-    } else {
-      document.getElementById("input-controls").style.display = "none";
-      addMessage("Thanks! Packaging your project brief and sending it to our developer now...", "ai");
-      await submitToEmail();
-    }
-  }
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
 
-  function sendAnswer() {
-    const input = document.getElementById("user-input");
-    submitValue(input.value.trim());
-  }
-
-  async function submitToEmail() {
-    const payload = {
-      access_key: WEB3FORMS_KEY,
-      subject: `New Web Dev Inquiry [${answers.project_type || "Project"}] — ${answers.contact || "New Lead"}`,
-      from_name: "AI Project Intake",
-      "1_Project_Type": answers.project_type,
-      "2_Core_Objective": answers.objective,
-      "3_Timeline_and_Budget": answers.constraints,
-      "4_Existing_Materials": answers.materials,
-      "5_Client_Contact": answers.contact
-    };
-
-    try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (data.success) {
-        addMessage("✅ All sent! Your project details are in our developer's inbox. Expect a reply soon.", "ai");
-      } else {
-        addMessage("⚠️ Something went wrong sending the form. Please verify your Web3Forms key.", "ai");
+        const data = await res.json();
+        if (res.ok && data.success) {
+          addMessage("All set! Your project brief has been delivered. We will follow up by email shortly.", "bot");
+        } else {
+          console.error("Web3Forms error:", data);
+          addMessage(`Submission error: ${data.message || "Please try again or email us directly."}`, "bot");
+          userInput.disabled = false;
+          sendBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        addMessage("Network error while sending your brief. Please check your connection and try again.", "bot");
+        userInput.disabled = false;
+        sendBtn.disabled = false;
       }
-    } catch (err) {
-      addMessage("⚠️ Network error while sending. Please refresh and try again.", "ai");
     }
-  }
 
-  // Browser Speech-to-Text
-  let recognition = null;
-  let isListening = false;
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    function handleUserAnswer(rawText) {
+      const text = rawText.trim();
+      if (!text) return;
 
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
+      addMessage(text, "user");
+      userInput.value = "";
 
-    recognition.onresult = (event) => {
-      submitValue(event.results[0][0].transcript);
-    };
-    recognition.onend = () => {
-      isListening = false;
-      document.getElementById("mic-btn").classList.remove("listening");
-    };
-  }
+      const currentKey = questions[step].key;
+      answers[currentKey] = text;
+      step++;
 
-  function toggleMic() {
-    if (!recognition) {
-      alert("Voice input isn't supported in this browser—please type your answer instead.");
-      return;
+      if (step < questions.length) {
+        setTimeout(askCurrentQuestion, 250);
+      } else {
+        submitToWeb3Forms();
+      }
     }
-    if (isListening) {
-      recognition.stop();
+
+    sendBtn.addEventListener("click", () => handleUserAnswer(userInput.value));
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleUserAnswer(userInput.value);
+    });
+
+    // Browser SpeechRecognition setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+
+      micBtn.addEventListener("click", () => {
+        try {
+          recognition.start();
+          micBtn.classList.add("listening");
+        } catch (e) {
+          recognition.stop();
+        }
+      });
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        handleUserAnswer(transcript);
+      };
+
+      recognition.onend = () => micBtn.classList.remove("listening");
+      recognition.onerror = () => micBtn.classList.remove("listening");
     } else {
-      isListening = true;
-      document.getElementById("mic-btn").classList.add("listening");
-      recognition.start();
+      micBtn.style.display = "none";
     }
-  }
 
-  // Start immediately on page load
-  window.addEventListener("DOMContentLoaded", () => {
-    addMessage(STEPS[0].question, "ai");
-    renderOptions(STEPS[0]);
-    document.getElementById("user-input").focus();
-  });
-</script>
+    // Start conversation
+    askCurrentQuestion();
+  </script>
 </body>
 </html>
