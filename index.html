@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Start Your Project — Client Intake</title>
+  <title>Start Your Project — AI Intake</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,8 +13,8 @@
     }
 
     body {
-      background-color: #f1f5f9;
-      color: #0f172a;
+      background-color: #f3f4f6;
+      color: #111827;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -25,24 +25,112 @@
     .card {
       background: #ffffff;
       width: 100%;
-      max-width: 680px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-      padding: 28px;
+      max-width: 660px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      padding: 26px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 6px;
     }
 
     h1 {
-      font-size: 1.65rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    .settings-btn {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .settings-btn:hover {
+      background: #e5e7eb;
     }
 
     .subtitle {
       font-size: 0.95rem;
-      color: #475569;
+      color: #4b5563;
       line-height: 1.45;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+    }
+
+    .settings-panel {
+      display: none;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .settings-panel label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .settings-select,
+    .settings-input {
+      height: 38px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 0.9rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .save-key-btn {
+      height: 38px;
+      background: #111827;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 14px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .status-line {
+      font-size: 0.82rem;
+      color: #4b5563;
+      margin-top: 6px;
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
 
     .tts-toggle {
@@ -50,42 +138,50 @@
       align-items: center;
       gap: 8px;
       font-size: 0.9rem;
-      color: #334155;
+      color: #374151;
       cursor: pointer;
-      margin-bottom: 14px;
       user-select: none;
     }
 
+    .mode-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
     .chat-box {
-      background-color: #0b1324;
-      border-radius: 12px;
-      padding: 18px;
-      height: 330px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 16px;
+      height: 320px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .msg {
-      max-width: 82%;
-      padding: 12px 16px;
-      border-radius: 12px;
+      max-width: 84%;
+      padding: 10px 14px;
+      border-radius: 10px;
       font-size: 0.95rem;
       line-height: 1.45;
       word-wrap: break-word;
     }
 
-    /* High-contrast AI bubble */
     .bot-msg {
-      background-color: #1e293b;
-      color: #f8fafc;
+      background-color: #ffffff;
+      color: #111827;
+      border: 1px solid #d1d5db;
       align-self: flex-start;
-      border: 1px solid #334155;
     }
 
-    /* User reply bubble */
     .user-msg {
       background-color: #2563eb;
       color: #ffffff;
@@ -97,20 +193,18 @@
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 12px;
-      min-height: 38px;
+      min-height: 36px;
     }
 
-    /* High-contrast quick-reply pills */
     .quick-btn {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      border: 1px solid #cbd5e1;
-      border-radius: 999px;
-      padding: 8px 16px;
+      background-color: #ffffff;
+      color: #111827;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      padding: 7px 15px;
       font-size: 0.9rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.15s ease, color 0.15s ease;
     }
 
     .quick-btn:hover {
@@ -121,56 +215,57 @@
 
     .input-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
     }
 
     .mic-btn {
-      background-color: #334155;
-      color: #f8fafc;
-      border: none;
-      border-radius: 10px;
-      width: 46px;
-      height: 46px;
-      font-size: 1.15rem;
+      background-color: #f3f4f6;
+      color: #111827;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      font-size: 1.1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: background-color 0.15s ease;
     }
 
     .mic-btn.listening {
       background-color: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
     }
 
     .text-input {
       flex: 1;
-      background-color: #0b1324;
-      color: #f8fafc;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      height: 46px;
-      padding: 0 14px;
+      background-color: #ffffff;
+      color: #111827;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      height: 44px;
+      padding: 0 12px;
       font-size: 0.95rem;
       outline: none;
     }
 
     .text-input::placeholder {
-      color: #94a3b8;
+      color: #6b7280;
     }
 
     .text-input:focus {
-      border-color: #3b82f6;
+      border-color: #2563eb;
     }
 
     .send-btn {
       background-color: #2563eb;
       color: #ffffff;
       border: none;
-      border-radius: 10px;
-      height: 46px;
+      border-radius: 8px;
+      height: 44px;
       padding: 0 18px;
       font-size: 0.95rem;
       font-weight: 600;
@@ -190,15 +285,34 @@
 </head>
 <body>
   <div class="card">
-    <h1>Tell Us About Your Project</h1>
+    <div class="header-row">
+      <h1>Tell Us About Your Project</h1>
+      <button type="button" class="settings-btn" id="toggleSettingsBtn">⚙ AI Key</button>
+    </div>
     <p class="subtitle">
       Answer 5 quick questions by tapping, typing, or using your microphone—your project brief goes straight to our developer.
     </p>
 
-    <label class="tts-toggle">
-      <input type="checkbox" id="ttsCheckbox" />
-      Read AI questions aloud
-    </label>
+    <div class="settings-panel" id="settingsPanel">
+      <label for="apiKeyInput">AI Provider & API Key (saved only in your browser)</label>
+      <div class="settings-grid">
+        <select id="providerSelect" class="settings-select">
+          <option value="groq">Groq (Llama 3.3)</option>
+          <option value="gemini">Gemini (2.5 Flash)</option>
+        </select>
+        <input type="password" id="apiKeyInput" class="settings-input" placeholder="Paste gsk_... or AIza... key" />
+        <button type="button" class="save-key-btn" id="saveKeyBtn">Save</button>
+      </div>
+      <div class="status-line" id="keyStatus">No AI key saved (using standard guided questions).</div>
+    </div>
+
+    <div class="controls-bar">
+      <label class="tts-toggle">
+        <input type="checkbox" id="ttsCheckbox" />
+        Read AI questions aloud
+      </label>
+      <span class="mode-badge" id="modeBadge">Standard Mode</span>
+    </div>
 
     <div class="chat-box" id="chatBox"></div>
 
@@ -220,7 +334,22 @@
   <script>
     const WEB3FORMS_ACCESS_KEY = "7393fec3-3022-4eea-bdef-224842265d47";
 
-    const questions = [
+    const SYSTEM_PROMPT = `You are a concise, friendly client intake assistant for a freelance web developer (Alex).
+Your job is to ask 5 short, logical questions one at a time to gather a complete project brief:
+1. Project type (New Project, Existing Project, or Troubleshoot)
+2. Platform / tech stack (e.g., landing page, web app, WordPress, Shopify, custom script)
+3. Specific goals, features, or bug details
+4. Ideal timeline or target launch window
+5. Client's name and best email address for follow-up
+
+Rules:
+- Ask ONLY ONE concise question per turn (1–2 sentences max).
+- Tailor your next question naturally based on what the user already told you.
+- Do not repeat questions already answered.
+- Once you have all 5 pieces of info (including their name and email), respond ONLY with valid JSON in this exact format and no extra text:
+{"done":true,"project_type":"...","platform_or_stack":"...","project_details":"...","timeline_budget":"...","client_contact":"...","summary":"2-3 sentence executive summary of the brief"}`;
+
+    const fallbackQuestions = [
       {
         key: "project_type",
         text: "Hi there! Is this a new project, an existing project, or something you need to troubleshoot?",
@@ -228,7 +357,7 @@
       },
       {
         key: "platform_or_stack",
-        text: "Got it. What type of site, app, or platform is this for (e.g., landing page, web app, Shopify, WordPress, custom script)?",
+        text: "Got it. What type of site, app, or platform is this for?",
         options: ["Landing Page", "Web App", "WordPress / Shopify", "Other / Not Sure"]
       },
       {
@@ -243,13 +372,14 @@
       },
       {
         key: "client_contact",
-        text: "Last step—what is your name and best email address so our developer can send your project brief and follow up?",
+        text: "Last step—what is your name and best email address so our developer can follow up?",
         options: []
       }
     ];
 
     let step = 0;
     const answers = {};
+    const conversationHistory = [];
 
     const chatBox = document.getElementById("chatBox");
     const quickReplies = document.getElementById("quickReplies");
@@ -257,6 +387,44 @@
     const sendBtn = document.getElementById("sendBtn");
     const micBtn = document.getElementById("micBtn");
     const ttsCheckbox = document.getElementById("ttsCheckbox");
+    const toggleSettingsBtn = document.getElementById("toggleSettingsBtn");
+    const settingsPanel = document.getElementById("settingsPanel");
+    const providerSelect = document.getElementById("providerSelect");
+    const apiKeyInput = document.getElementById("apiKeyInput");
+    const saveKeyBtn = document.getElementById("saveKeyBtn");
+    const keyStatus = document.getElementById("keyStatus");
+    const modeBadge = document.getElementById("modeBadge");
+
+    function getAIConfig() {
+      return {
+        provider: localStorage.getItem("intake_ai_provider") || "groq",
+        apiKey: (localStorage.getItem("intake_ai_key") || "").trim()
+      };
+    }
+
+    function updateModeUI() {
+      const { provider, apiKey } = getAIConfig();
+      providerSelect.value = provider;
+      if (apiKey) {
+        apiKeyInput.value = apiKey;
+        keyStatus.textContent = `Active: ${provider.toUpperCase()} AI enabled.`;
+        modeBadge.textContent = `AI Mode (${provider.toUpperCase()})`;
+      } else {
+        keyStatus.textContent = "No AI key saved (using standard guided questions).";
+        modeBadge.textContent = "Standard Mode";
+      }
+    }
+
+    toggleSettingsBtn.addEventListener("click", () => {
+      settingsPanel.classList.toggle("open");
+    });
+
+    saveKeyBtn.addEventListener("click", () => {
+      localStorage.setItem("intake_ai_provider", providerSelect.value);
+      localStorage.setItem("intake_ai_key", apiKeyInput.value.trim());
+      updateModeUI();
+      settingsPanel.classList.remove("open");
+    });
 
     function speak(text) {
       if (!ttsCheckbox.checked || !("speechSynthesis" in window)) return;
@@ -272,6 +440,7 @@
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
       if (sender === "bot") speak(text);
+      return div;
     }
 
     function renderQuickReplies(options) {
@@ -286,13 +455,53 @@
       });
     }
 
-    function askCurrentQuestion() {
-      const q = questions[step];
-      addMessage(q.text, "bot");
-      renderQuickReplies(q.options);
+    async function callAI() {
+      const { provider, apiKey } = getAIConfig();
+      if (!apiKey) return null;
+
+      if (provider === "groq") {
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...conversationHistory
+            ],
+            temperature: 0.4,
+            max_tokens: 300
+          })
+        });
+        if (!res.ok) throw new Error(`Groq API error (${res.status})`);
+        const data = await res.json();
+        return data.choices[0].message.content.trim();
+      } else {
+        const contents = conversationHistory.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }]
+        }));
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+              contents
+            })
+          }
+        );
+        if (!res.ok) throw new Error(`Gemini API error (${res.status})`);
+        const data = await res.json();
+        return data.candidates[0].content.parts[0].text.trim();
+      }
     }
 
-    async function submitToWeb3Forms() {
+    async function submitToWeb3Forms(briefData) {
       userInput.disabled = true;
       sendBtn.disabled = true;
       quickReplies.innerHTML = "";
@@ -300,13 +509,14 @@
 
       const payload = {
         access_key: WEB3FORMS_ACCESS_KEY,
-        subject: `New Client Intake: ${answers.project_type || "Project Inquiry"}`,
-        from_name: "Project Intake Assistant",
-        project_type: answers.project_type || "",
-        platform_or_stack: answers.platform_or_stack || "",
-        project_details: answers.project_details || "",
-        timeline_budget: answers.timeline_budget || "",
-        client_contact: answers.client_contact || ""
+        subject: `New Client Intake: ${briefData.project_type || "Project Inquiry"}`,
+        from_name: "AI Project Intake",
+        project_type: briefData.project_type || "",
+        platform_or_stack: briefData.platform_or_stack || "",
+        project_details: briefData.project_details || "",
+        timeline_budget: briefData.timeline_budget || "",
+        client_contact: briefData.client_contact || "",
+        ai_summary: briefData.summary || "Standard flow submission"
       };
 
       try {
@@ -323,34 +533,66 @@
         if (res.ok && data.success) {
           addMessage("All set! Your project brief has been delivered. We will follow up by email shortly.", "bot");
         } else {
-          console.error("Web3Forms error:", data);
-          addMessage(`Submission error: ${data.message || "Please try again or email us directly."}`, "bot");
+          addMessage(`Submission error: ${data.message || "Please try again."}`, "bot");
           userInput.disabled = false;
           sendBtn.disabled = false;
         }
       } catch (err) {
-        console.error("Network error:", err);
         addMessage("Network error while sending your brief. Please check your connection and try again.", "bot");
         userInput.disabled = false;
         sendBtn.disabled = false;
       }
     }
 
-    function handleUserAnswer(rawText) {
+    function runFallbackStep(userText) {
+      if (userText !== null) {
+        const currentKey = fallbackQuestions[step].key;
+        answers[currentKey] = userText;
+        step++;
+      }
+
+      if (step < fallbackQuestions.length) {
+        const q = fallbackQuestions[step];
+        addMessage(q.text, "bot");
+        conversationHistory.push({ role: "assistant", content: q.text });
+        renderQuickReplies(q.options);
+      } else {
+        submitToWeb3Forms(answers);
+      }
+    }
+
+    async function handleUserAnswer(rawText) {
       const text = rawText.trim();
       if (!text) return;
 
       addMessage(text, "user");
       userInput.value = "";
+      quickReplies.innerHTML = "";
+      conversationHistory.push({ role: "user", content: text });
 
-      const currentKey = questions[step].key;
-      answers[currentKey] = text;
-      step++;
+      const { apiKey } = getAIConfig();
+      if (!apiKey) {
+        setTimeout(() => runFallbackStep(text), 200);
+        return;
+      }
 
-      if (step < questions.length) {
-        setTimeout(askCurrentQuestion, 250);
-      } else {
-        submitToWeb3Forms();
+      const thinkingBubble = addMessage("Thinking...", "bot");
+      try {
+        const aiReply = await callAI();
+        thinkingBubble.remove();
+
+        const jsonMatch = aiReply.match(/\{[\s\S]*"done"\s*:\s*true[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          await submitToWeb3Forms(parsed);
+        } else {
+          addMessage(aiReply, "bot");
+          conversationHistory.push({ role: "assistant", content: aiReply });
+        }
+      } catch (err) {
+        thinkingBubble.remove();
+        console.warn("AI fallback triggered:", err);
+        runFallbackStep(text);
       }
     }
 
@@ -359,7 +601,6 @@
       if (e.key === "Enter") handleUserAnswer(userInput.value);
     });
 
-    // Browser SpeechRecognition setup
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
@@ -387,8 +628,8 @@
       micBtn.style.display = "none";
     }
 
-    // Start conversation
-    askCurrentQuestion();
+    updateModeUI();
+    runFallbackStep(null);
   </script>
 </body>
 </html>
