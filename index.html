@@ -251,6 +251,8 @@
     const GROQ_KEY_PARTS = ["gsk_YOUR_FIRST_PART", "YOUR_SECOND_PART", "YOUR_THIRD_PART"];
     const GROQ_API_KEY = GROQ_KEY_PARTS.join("");
 
+    const GROQ_MODELS = ["llama-3.1-8b-instant", "openai/gpt-oss-120b"];
+
     const SYSTEM_PROMPT = `You are a concise, friendly client intake assistant for web developer Alex.
 Ask 5 short, logical questions ONE AT A TIME to gather a complete project brief:
 1. Project type (New Project, Existing Project, or Troubleshoot)
@@ -335,29 +337,34 @@ Rules:
     }
 
     async function callGroqAI() {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${GROQ_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...conversationHistory
-          ],
-          temperature: 0.4,
-          max_tokens: 300
-        })
-      });
+      let lastErr = null;
+      for (const modelId of GROQ_MODELS) {
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: modelId,
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...conversationHistory
+            ],
+            temperature: 0.4,
+            max_tokens: 300
+          })
+        });
 
-      if (!res.ok) {
+        if (res.ok) {
+          const data = await res.json();
+          return data.choices[0].message.content.trim();
+        }
         const errBody = await res.text();
-        throw new Error(`Groq ${res.status}: ${errBody}`);
+        lastErr = new Error(`Groq ${res.status} (${modelId}): ${errBody}`);
+        if (res.status !== 404) break;
       }
-      const data = await res.json();
-      return data.choices[0].message.content.trim();
+      throw lastErr;
     }
 
     async function submitToWeb3Forms(briefData) {
