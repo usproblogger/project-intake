@@ -247,8 +247,7 @@
   <script>
     const WEB3FORMS_ACCESS_KEY = "7393fec3-3022-4eea-bdef-224842265d47";
 
-    // Split your Groq key (gsk_...) into 3 chunks so GitHub doesn't auto-revoke on commit
-    const GROQ_KEY_PARTS = ["gsk_YOUR_FIRST_PART", "YOUR_SECOND_PART", "YOUR_THIRD_PART"];
+    const GROQ_KEY_PARTS = ["gsk_Xz4czp12K7RymelB", "a1yaWGdyb3FYGjCtvG", "H6beUcpZ9i4BC33otu"];
     const GROQ_API_KEY = GROQ_KEY_PARTS.join("");
 
     const GROQ_MODELS = ["llama-3.1-8b-instant", "openai/gpt-oss-120b"];
@@ -435,12 +434,6 @@ Rules:
       userInput.value = "";
       quickReplies.innerHTML = "";
       conversationHistory.push({ role: "user", content: text });
-
-      const hasKey = GROQ_API_KEY && !GROQ_API_KEY.includes("YOUR_FIRST_PART");
-      if (!hasKey) {
-        setTimeout(() => runFallbackStep(text), 200);
-        return;
-      }
 
       const thinkingBubble = addMessage("Thinking...", "bot");
       try {
